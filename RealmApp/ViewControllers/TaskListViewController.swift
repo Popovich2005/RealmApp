@@ -12,9 +12,7 @@ import RealmSwift
 final class TaskListViewController: UITableViewController {
     
     private var taskLists: Results<TaskList>!
-    private var task: Task!
     private let storageManager = StorageManager.shared
-    private let dataManager = DataManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +24,6 @@ final class TaskListViewController: UITableViewController {
         )
         
         taskLists = storageManager.fetchData(TaskList.self)
-        createTempData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,44 +36,61 @@ final class TaskListViewController: UITableViewController {
         taskLists.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskListCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
         let taskList = taskLists[indexPath.row]
         content.text = taskList.title
         switch taskList.tasks.isEmpty {
-            case true:
-                content.secondaryText = "0"
-            case false:
-                if taskList.tasks.allSatisfy({ $0.isComplete }) {
-                    content.secondaryTextProperties.color = .blue
-                    content.secondaryText = "✓"
-                } else {
-                    content.secondaryText = "\(taskList.tasks.filter { !$0.isComplete }.count)"
-                }
+        case true:
+            content.secondaryText = "0"
+        case false:
+            if taskList.tasks.allSatisfy({ $0.isComplete }) {
+                content.secondaryTextProperties.color = .blue
+                content.secondaryText = "✓"
+            } else {
+                content.secondaryText = "\(taskList.tasks.filter { !$0.isComplete }.count)"
+            }
         }
         cell.contentConfiguration = content
         return cell
     }
     
     // MARK: - UITableViewDelegate
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    override func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        
         let taskList = taskLists[indexPath.row]
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [unowned self] _, _, _ in
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: "Delete"
+        ) { [unowned self] _, _, _ in
             storageManager.delete(taskList)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
         
-        let editAction = UIContextualAction(style: .normal, title: "Edit") { [unowned self] _, _, isDone in
+        let editAction = UIContextualAction(
+            style: .normal,
+            title: "Edit"
+        ) { [unowned self] _, _, isDone in
             showAlert(with: taskList) {
                 tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             isDone(true)
         }
         
-        let doneAction = UIContextualAction(style: .normal, title: "Done") { [unowned self] _, _, isDone in
-            storageManager.done(taskList)            
+        let doneAction = UIContextualAction(
+            style: .normal,
+            title: "Done"
+        ) { [unowned self] _, _, isDone in
+            storageManager.done(taskList)
             tableView.reloadRows(at: [indexPath], with: .automatic)
             isDone(true)
         }
@@ -99,11 +113,9 @@ final class TaskListViewController: UITableViewController {
     @IBAction func sortingList(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
-            let sortedLists = taskLists.sorted(byKeyPath: "date", ascending: true)
-            taskLists = sortedLists
+            taskLists = taskLists.sorted(byKeyPath: "date", ascending: true)
         default:
-            let sortedLists = taskLists.sorted(byKeyPath: "title", ascending: true)
-            taskLists = sortedLists
+            taskLists = taskLists.sorted(byKeyPath: "title", ascending: true)
         }
         tableView.reloadData()
     }
@@ -123,7 +135,10 @@ extension TaskListViewController {
         
         alertBuilder
             .setTextField(withPlaceholder: "List Title", andText: taskList?.title)
-            .addAction(title: taskList != nil ? "Update List" : "Save List", style: .default) { [unowned self] newValue, _ in
+            .addAction(
+                title: taskList != nil ? "Update List" : "Save List",
+                style: .default
+            ) { [unowned self] newValue, _ in
                 if let taskList, let completion {
                     storageManager.edit(taskList, newValue: newValue)
                     completion()
@@ -142,15 +157,6 @@ extension TaskListViewController {
         storageManager.save(title) { taskList in
             let rowIndex = IndexPath(row: taskLists.index(of: taskList) ?? 0, section: 0)
             tableView.insertRows(at: [rowIndex], with: .automatic)
-        }
-    }
-    
-    private func createTempData() {
-        if !UserDefaults.standard.bool(forKey: "done") {
-            dataManager.createTempData { [unowned self] in
-                UserDefaults.standard.setValue(true, forKey: "done")
-                tableView.reloadData()
-            }
         }
     }
 }

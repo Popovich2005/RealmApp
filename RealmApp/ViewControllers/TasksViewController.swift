@@ -32,7 +32,6 @@ final class TasksViewController: UITableViewController {
         completedTasks = taskList.tasks.filter("isComplete = true")
     }
     
-    
     // MARK: - UITableViewDataSource
     override func numberOfSections(in tableView: UITableView) -> Int {
         2
@@ -42,44 +41,68 @@ final class TasksViewController: UITableViewController {
         section == 0 ? currentTasks.count : completedTasks.count
     }
     
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(
+        _ tableView: UITableView,
+        titleForHeaderInSection section: Int
+    ) -> String? {
+        
         section == 0 ? "CURRENT TASKS" : "COMPLETED TASKS"
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "TasksCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
-        let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
+        
+        let task = indexPath.section == 0
+            ? currentTasks[indexPath.row]
+            : completedTasks[indexPath.row]
+        
         content.text = task.title
         content.secondaryText = task.note
         cell.contentConfiguration = content
         return cell
     }
     
-   anim
-
-    
     @objc private func addButtonPressed() {
         showAlert()
     }
     
     // MARK: - UITableViewDelegate
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let task = indexPath.section == 0 ? currentTasks[indexPath.row] : completedTasks[indexPath.row]
+    override func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [unowned self] _, _, _ in
+        let task = indexPath.section == 0 
+            ? currentTasks[indexPath.row]
+            : completedTasks[indexPath.row]
+            
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: "Delete"
+        ) { [unowned self] _, _, _ in
             storageManager.deleteTask(task)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
         
-        let editAction = UIContextualAction(style: .normal, title: "Edit") { [unowned self] _, _, isDone in
+        let editAction = UIContextualAction(
+            style: .normal,
+            title: "Edit"
+        ) { [unowned self] _, _, isDone in
             showAlert(with: task) {
                 tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             isDone(true)
         }
         
-        let doneAction = UIContextualAction(style: .normal, title: "Done") { [unowned self] _, _, isDone in
+        let doneAction = UIContextualAction(
+            style: .normal,
+            title: "Done"
+        ) { [unowned self] _, _, isDone in
             storageManager.doneTask(task)
             tableView.reloadData()
             tableView.reloadRows(at: [indexPath], with: .automatic)
@@ -94,9 +117,7 @@ final class TasksViewController: UITableViewController {
 
 }
 
-
-
-
+// MARK: - AlertController
 extension TasksViewController {
     private func showAlert(with task: Task? = nil, completion: (() -> Void)? = nil) {
         let alertBuilder = AlertControllerBuilder(
