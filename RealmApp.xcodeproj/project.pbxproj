@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		3A8548862BBC3A46009716D5 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = 3A8548852BBC3A46009716D5 /* Realm */; };
 		3A8548882BBC3A46009716D5 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3A8548872BBC3A46009716D5 /* RealmSwift */; };
-		A804828427103A010095A493 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A804828327103A010095A493 /* DataManager.swift */; };
 		A804828627103A100095A493 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A804828527103A100095A493 /* StorageManager.swift */; };
 		A804828827103BFD0095A493 /* TaskList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A804828727103BFD0095A493 /* TaskList.swift */; };
 		A872A10F20E9D82400ECE2BA /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A872A10E20E9D82400ECE2BA /* AppDelegate.swift */; };
@@ -22,7 +21,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		A804828327103A010095A493 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
 		A804828527103A100095A493 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		A804828727103BFD0095A493 /* TaskList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskList.swift; sourceTree = "<group>"; };
 		A872A10B20E9D82400ECE2BA /* RealmApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RealmApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -107,7 +105,6 @@
 		A8969B34270F34C900F7DED0 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				A804828327103A010095A493 /* DataManager.swift */,
 				A804828527103A100095A493 /* StorageManager.swift */,
 			);
 			path = Services;
@@ -221,7 +218,6 @@
 			files = (
 				A804828827103BFD0095A493 /* TaskList.swift in Sources */,
 				A8E78FE9241A76EE00E66973 /* AlertControllerBuilder.swift in Sources */,
-				A804828427103A010095A493 /* DataManager.swift in Sources */,
 				A872A10F20E9D82400ECE2BA /* AppDelegate.swift in Sources */,
 				A804828627103A100095A493 /* StorageManager.swift in Sources */,
 				A872A12120E9D87400ECE2BA /* TaskListViewController.swift in Sources */,

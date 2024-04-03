@@ -14,7 +14,6 @@ final class TaskListViewController: UITableViewController {
     private var taskLists: Results<TaskList>!
     private var task: Task!
     private let storageManager = StorageManager.shared
-    private let dataManager = DataManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,9 +23,7 @@ final class TaskListViewController: UITableViewController {
             target: self,
             action: #selector(addButtonPressed)
         )
-        
         taskLists = storageManager.fetchData(TaskList.self)
-        createTempData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -39,7 +36,11 @@ final class TaskListViewController: UITableViewController {
         taskLists.count
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    override func tableView(
+        _ tableView: UITableView,
+        cellForRowAt indexPath: IndexPath
+    ) -> UITableViewCell {
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskListCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
         let taskList = taskLists[indexPath.row]
@@ -60,27 +61,39 @@ final class TaskListViewController: UITableViewController {
     }
     
     // MARK: - UITableViewDelegate
-    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+    override func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        
         let taskList = taskLists[indexPath.row]
         
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [unowned self] _, _, _ in
+        let deleteAction = UIContextualAction(
+            style: .destructive,
+            title: "Delete"
+        ) { [unowned self] _, _, _ in
             storageManager.delete(taskList)
             tableView.deleteRows(at: [indexPath], with: .automatic)
         }
         
-        let editAction = UIContextualAction(style: .normal, title: "Edit") { [unowned self] _, _, isDone in
+        let editAction = UIContextualAction(
+            style: .normal,
+            title: "Edit"
+        ) { [unowned self] _, _, isDone in
             showAlert(with: taskList) {
-                tableView.reloadRows(at: [indexPath], with: .automatic)
+            tableView.reloadRows(at: [indexPath], with: .automatic)
             }
             isDone(true)
         }
         
-        let doneAction = UIContextualAction(style: .normal, title: "Done") { [unowned self] _, _, isDone in
+        let doneAction = UIContextualAction(
+            style: .normal,
+            title: "Done"
+        ) { [unowned self] _, _, isDone in
             storageManager.done(taskList)            
             tableView.reloadRows(at: [indexPath], with: .automatic)
             isDone(true)
         }
-        
         
         editAction.backgroundColor = .orange
         doneAction.backgroundColor = #colorLiteral(red: 0.3411764801, green: 0.6235294342, blue: 0.1686274558, alpha: 1)
@@ -123,13 +136,15 @@ extension TaskListViewController {
         
         alertBuilder
             .setTextField(withPlaceholder: "List Title", andText: taskList?.title)
-            .addAction(title: taskList != nil ? "Update List" : "Save List", style: .default) { [unowned self] newValue, _ in
-                if let taskList, let completion {
+            .addAction(title: taskList != nil ? "Update List" : "Save List", style: .default) {
+                [unowned self] newValue,
+                _ in
+                if let taskList,
+                   let completion {
                     storageManager.edit(taskList, newValue: newValue)
                     completion()
                     return
                 }
-                
                 createTaskList(withTitle: newValue)
             }
             .addAction(title: "Cancel", style: .destructive)
@@ -142,15 +157,6 @@ extension TaskListViewController {
         storageManager.save(title) { taskList in
             let rowIndex = IndexPath(row: taskLists.index(of: taskList) ?? 0, section: 0)
             tableView.insertRows(at: [rowIndex], with: .automatic)
-        }
-    }
-    
-    private func createTempData() {
-        if !UserDefaults.standard.bool(forKey: "done") {
-            dataManager.createTempData { [unowned self] in
-                UserDefaults.standard.setValue(true, forKey: "done")
-                tableView.reloadData()
-            }
         }
     }
 }
